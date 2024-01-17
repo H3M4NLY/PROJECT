@@ -4,6 +4,7 @@
 
 #include <avr/interrupt.h>
 #include <LiquidCrystal_I2C.h>
+#include <Wire.h>
 LiquidCrystal_I2C lcd(0x27,16,2);
 long duration;
 int distance;
