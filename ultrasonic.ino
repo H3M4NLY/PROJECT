@@ -1,5 +1,7 @@
 #define TrigPin 11
 #define EchoPin 10
+#define IR1Pin A0
+
 #include <avr/interrupt.h>
 #include <LiquidCrystal_I2C.h>
 LiquidCrystal_I2C lcd(0x27,16,2);
@@ -8,14 +10,9 @@ int distance;
 
 void setup()
 {
-
   Serial.begin(9600);
-  pinMode(2, INPUT_PULLUP);
-  pinMode(4, INPUT_PULLUP);
   pinMode(TrigPin, OUTPUT);
   pinMode(EchoPin, INPUT);
-  PCICR |= B00000100; // Enable interrupts on PD port
-  PCMSK2 |= B00010000; // Trigger interrupts on pins D4 (Hit a)
   
   lcd.init();
   lcd.begin(16, 2);
@@ -29,28 +26,32 @@ void loop()
   digitalWrite(TrigPin, LOW);
   delayMicroseconds(2);
   
-  // Sets the trigPin on HIGH state for 10 micro seconds
-  digitalWrite(TrigPin, HIGH);
+  digitalWrite(TrigPin, HIGH); // Sets the trigPin on HIGH state for 10 micro seconds
   delayMicroseconds(10);
   digitalWrite(TrigPin, LOW);
   
-  // Reads the echoPin, returns the sound wave travel time in microseconds
-  duration = pulseIn(EchoPin, HIGH);
-  // Calculating the distance
-  distance = duration * 0.034 / 2;
-  // Prints the distance on the Serial Monitor
   
-  Serial.print("Distance: ");
+  duration = pulseIn(EchoPin, HIGH); // Reads the echoPin, returns the sound wave travel time in microseconds
+
+  distance = duration * 0.034 / 2; // Calculating the distance
+  
+  Serial.print("Distance: "); // Prints the distance on the Serial Monitor
   Serial.println(distance);
 
-  lcd.setCursor(0, 0);
-  lcd.print("Distance:");
-  lcd.print(distance);
+  if (digitalRead(IR1Pin)==0) {
+  lcd.setCursor(0,0);
+  lcd.print("STOP           ");
+  }
+  
+  else 
+  {
+  lcd.setCursor(0,0);
+  lcd.print("In Delivery");
+  }
+
+
 
   if (distance <=50){
-    lcd.setCursor(0, 0);
-  	lcd.print("Distance:");
-  	lcd.print(distance);
     lcd.setCursor(0,1);
     lcd.print("Obstacle!");
     Serial.print("Distance: ");
