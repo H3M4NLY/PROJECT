@@ -2,11 +2,11 @@
 #define motor_board_input_pin_IN3 9
 #define motor_board_input_pin_IN2 5 
 #define motor_board_input_pin_IN1 3 
-void Full_speed_forward(void);
-void Full_speed_backward(void);
-void From_0_to_100_forward(void);
-void From_100_to_0_backward(void);
-void brake(void);
+void Full_speed_forward();
+void Full_speed_backward();
+void From_0_to_100_forward();
+void From_100_to_0_backward();
+void brake();
 
 void setup() {
   // put your setup code here, to run once:
