@@ -13,6 +13,7 @@ int distance;
 #define motorPin_IN4 3 //Connect to Arduino pin 3
 #define motorPin_IN3 5 //Connect to Arduino pin 5
 
+
 void setup()
 {
   Serial.begin(9600);
@@ -29,6 +30,7 @@ void setup()
   lcd.clear();
   interrupts();
 }
+
 
 void loop()
 {
@@ -68,7 +70,22 @@ void loop()
 
   }
 
- if (distance <=50){
+ for (;;){
+  digitalWrite(TrigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TrigPin, HIGH); // Sets the trigPin on HIGH state for 10 micro seconds
+  delayMicroseconds(10);
+  duration = pulseIn(EchoPin, HIGH);
+  distance = duration * 0.034 / 2; // Calculating the distance
+  
+  if (distance >=50){
+    lcd.setCursor(0,1);
+    lcd.print("          ");
+    break;
+    delay(20);
+  }
+
+  else if (distance !=0 ){
     lcd.setCursor(0,1);
     lcd.print("Obstacle!");
     Serial.print("Distance: ");
@@ -77,11 +94,8 @@ void loop()
     digitalWrite(motorPin_IN1, LOW);
     digitalWrite(motorPin_IN4, LOW);
     digitalWrite(motorPin_IN3, LOW);
+    delay(20);
   }
-
-  else{
-    lcd.setCursor(0,1);
-    lcd.print("          ");
   
   }
   }
