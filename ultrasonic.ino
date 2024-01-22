@@ -8,12 +8,20 @@
 LiquidCrystal_I2C lcd(0x27,16,2);
 long duration;
 int distance;
+#define motorPin_IN2 6 //Connect to Arduino pin 6
+#define motorPin_IN1 9 //Connect to Arduino pin 9
+#define motorPin_IN4 3 //Connect to Arduino pin 3
+#define motorPin_IN3 5 //Connect to Arduino pin 5
 
 void setup()
 {
   Serial.begin(9600);
   pinMode(TrigPin, OUTPUT);
   pinMode(EchoPin, INPUT);
+  pinMode(motorPin_IN4, OUTPUT);
+  pinMode(motorPin_IN3, OUTPUT);
+  pinMode(motorPin_IN2, OUTPUT);
+  pinMode(motorPin_IN1, OUTPUT);
   
   lcd.init();
   lcd.begin(16, 2);
@@ -40,27 +48,44 @@ void loop()
   Serial.println(distance);
 
   if (digitalRead(IR1Pin)==0) {
-  lcd.setCursor(0,0);
-  lcd.print("STOP           ");
+    lcd.setCursor(0,0);
+    lcd.print("STOP           ");
+    digitalWrite(motorPin_IN2, LOW);
+    digitalWrite(motorPin_IN1, LOW);
+    digitalWrite(motorPin_IN4, LOW);
+    digitalWrite(motorPin_IN3, LOW);
+    delay(500);
   }
   
   else 
   {
-  lcd.setCursor(0,0);
-  lcd.print("In Delivery");
+    lcd.setCursor(0,0);
+    lcd.print("In Delivery");
+    digitalWrite(motorPin_IN2, HIGH);
+    digitalWrite(motorPin_IN1, LOW);
+    digitalWrite(motorPin_IN4, LOW);
+    digitalWrite(motorPin_IN3, HIGH);
+
   }
 
-
-
-  if (distance <=50){
+ if (distance <=50){
     lcd.setCursor(0,1);
     lcd.print("Obstacle!");
     Serial.print("Distance: ");
-  	Serial.println(distance);
+    Serial.println(distance);
+    digitalWrite(motorPin_IN2, LOW);
+    digitalWrite(motorPin_IN1, LOW);
+    digitalWrite(motorPin_IN4, LOW);
+    digitalWrite(motorPin_IN3, LOW);
   }
 
   else{
     lcd.setCursor(0,1);
     lcd.print("          ");
+  
   }
-}
+  }
+
+
+
+ 
