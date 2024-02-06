@@ -22,13 +22,15 @@ LiquidCrystal_I2C lcd(0x27,16,2);
 #define Hit_aPin 4 //define digital I/O pin D4 for Hit A
 
 #define Hit_bPin 2 //define digital I/O pin D2 for Hit B
+
 void moveforward(void);
 void moveright(void);
 void moveleft(void);
 void stopyes(void);
-void Hit1(void);
-void Hit2(void);
 
+
+int counterA = 0;
+int counterB = 0;
 
 void setup()
 {
@@ -37,6 +39,9 @@ void setup()
   TCCR0B = TCCR0B & B11111000 | B00000010;    // set timer 0 divisor to     8 for PWM frequency of  7812.50 Hz
   TCCR1B = TCCR1B & B11111000 | B00000010;    // set timer 1 divisor to     8 for PWM frequency of  3921.16 Hz
   TCCR2B = TCCR2B & B11111000 | B00000010;    // set timer 2 divisor to     8 for PWM frequency of  3921.16 Hz
+
+  PCICR |= B00000100; // Enable interrupts on PD port
+  PCMSK2 |= B00010100; // Trigger interrupts on pins D2 and D4
   
   pinMode(Hit_aPin, INPUT_PULLUP); //Use Hit_aPin as digital INPUT_PULLUP pin
   
@@ -55,12 +60,12 @@ void setup()
   pinMode(RM2, OUTPUT);
 
   
-lcd.init();
-lcd.begin(16,2);
-lcd.backlight();
-lcd.clear();
+  lcd.init();
+  lcd.begin(16,2);
+  lcd.backlight();
+  lcd.clear();
 
-  
+  interrupts();
 
 }
 
@@ -114,13 +119,17 @@ void moveleft(){
 }
 
 void loop(){
-Serial.print("LEft");
-Serial.println(digitalRead(LS));
-Serial.print("Right");
-Serial.println(digitalRead(RS));
+Serial.print("A:");
+Serial.println(digitalRead(4));
+Serial.print("/n B:");
+Serial.println(digitalRead(2));
 
+lcd.setCursor(0,0);
+lcd.print("Deliveries Pending");
+lcd.println(counterA);
 lcd.setCursor(0,1);
-lcd.print("shit");
+lcd.print("Deliveries Complete:");
+lcd.println(counterB);
 
 moveforward();
 
@@ -160,23 +169,14 @@ moveforward();
   {
     stopyes();
   }
-}
-
-void Hit1()
-{
-if (!digitalRead(Hit_bPin)) // if Hit_bPin is 0, Target B receives hit
-   {
-    Serial.println(Hit_bPin);
-    lcd.setCursor(0,0);
-    lcd.print("In Delivery");
-   }
-}
-
-void Hit2(){
-if (!digitalRead(Hit_aPin)) // if Hit_aPin is 0, Target A receives hit
- {
-    Serial.println(Hit_aPin);
-    lcd.setCursor(0,0);
-    lcd.print("STOP           ");
- }
+  }
+  
+ISR (PCINT2_vect) {
+  if (!digitalRead(2)){
+    counterA++;
+    
+  }
+  else if (!digitalRead(4)){
+    counterB++;
+  }
 }
