@@ -131,7 +131,6 @@ lcd.setCursor(0,1);
 lcd.print("Deliveries Complete:");
 lcd.println(counterB);
 
-moveforward();
 
   if(!(digitalRead(LS)) && !(digitalRead(RS)))     // Move Forward
 
